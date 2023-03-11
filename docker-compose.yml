@@ -1,0 +1,32 @@
+version: '1'
+services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      - MARIADB_ROOT_PASSWORD=password
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - 3306:3306
+  wordpress:
+    image: wordpress:6.1.1-php8.1-fpm
+    restart: always
+    volumes:
+      - ./wordpress:/var/www/html
+      # - ./plugin-name:/var/www/html/wp-content/plugins/plugin-name
+      # - ./logs/debug.log:/var/www/html/wp-content/debug.log
+      - ./php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    ports:
+      - 9000:9000
+  nginx:
+    build: 
+      context: './nginx'
+      dockerfile: './Dockerfile'
+    restart: always
+    volumes:
+      - ./wordpress:/var/www/html
+      # - ./plugin-name:/var/www/html/wp-content/plugins/plugin-name
+      # - ./logs:/logs
+    ports:
+      - 80:80
